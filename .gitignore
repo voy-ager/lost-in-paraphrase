@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+# secrets never live in the repo
+.env
+.env.*
+# raw Inspect logs stay local; only scrubbed summaries are committed
+logs/
+*.eval
+*.local.*
