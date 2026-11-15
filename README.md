@@ -43,7 +43,23 @@ flowchart LR
 
 ## Setup
 
-Coming in Phase 0. It will cover Python 3.12+, Docker (for the code sandbox) and Ollama (local models; no API keys are needed or used).
+No API keys are needed or used. Python 3.12 or 3.13 is recommended (3.14 may lack wheels for some dependencies).
+
+```bash
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt -e ".[dev]"
+```
+
+1. **Docker** (running): model-generated code only executes inside ControlArena's Docker sandbox. Check with `docker info`.
+2. **Ollama** (local models): install from ollama.com, then `ollama pull qwen2.5:0.5b`. Inspect addresses it as `ollama/qwen2.5:0.5b`.
+3. **Smoke test** (local only, runs one Apps sample with trusted monitoring in Docker; the first run downloads the Apps dataset from Hugging Face):
+
+```bash
+python scripts/smoke_ollama.py
+```
+
+Logs go to `logs/` (gitignored). CI runs `pytest` with no Docker, Ollama or network; the smoke test is marked `slow` (`pytest -m slow`).
 
 ## Security
 

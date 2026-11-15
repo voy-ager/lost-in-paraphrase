@@ -34,7 +34,9 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
       - name: install
         run: |
           # runner's bundled setuptools has known advisories; it is a build tool, not a project dep
