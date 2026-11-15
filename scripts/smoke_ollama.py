@@ -3,7 +3,9 @@
 Needs Docker running and `ollama pull qwen2.5:0.5b`. Logs go to logs/ (gitignored).
 """
 
+import subprocess
 import sys
+import urllib.request
 
 from control_arena import EvalMode
 from control_arena.eval import ControlEvalConfig, get_control_task
@@ -14,7 +16,19 @@ from inspect_ai import eval as inspect_eval
 MODEL = "ollama/qwen2.5:0.5b"
 
 
+def preflight() -> None:
+    try:
+        subprocess.run(["docker", "info"], capture_output=True, timeout=15, check=True)  # nosec B603 B607
+    except (OSError, subprocess.SubprocessError):
+        sys.exit("Docker engine not running: open Docker Desktop and wait for 'Engine running'")
+    try:
+        urllib.request.urlopen("http://localhost:11434", timeout=5)  # nosec B310
+    except OSError:
+        sys.exit("Ollama not reachable at http://localhost:11434: start Ollama")
+
+
 def run() -> bool:
+    preflight()
     cfg = ControlEvalConfig(
         trusted_model=MODEL,
         untrusted_model=MODEL,
