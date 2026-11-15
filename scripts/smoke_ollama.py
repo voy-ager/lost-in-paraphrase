@@ -3,7 +3,7 @@
 Needs Docker running and `ollama pull qwen2.5:0.5b`. Logs go to logs/ (gitignored).
 """
 
-import subprocess
+import subprocess  # nosec B404
 import sys
 import urllib.request
 
@@ -20,7 +20,9 @@ def preflight() -> None:
     try:
         subprocess.run(["docker", "info"], capture_output=True, timeout=15, check=True)  # nosec B603 B607
     except (OSError, subprocess.SubprocessError):
-        sys.exit("Docker engine not running: open Docker Desktop and wait for 'Engine running'")
+        sys.exit(
+            "Docker engine not running: open Docker Desktop and wait for 'Engine running'"
+        )
     try:
         urllib.request.urlopen("http://localhost:11434", timeout=5)  # nosec B310
     except OSError:
