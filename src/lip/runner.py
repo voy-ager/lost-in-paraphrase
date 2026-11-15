@@ -27,22 +27,44 @@ SPLITS = {
 PROTOCOLS = {"trusted_monitoring": trusted_monitoring_builder}  # others plug in here
 
 
+REQUIRED = {"protocol", "mode", "untrusted_model", "trusted_model", "log_dir"}
+OPTIONAL = {"split", "start", "n", "epochs", "max_steps", "seed", "setting"}
+SETTING_KEYS = {"has_backdoor_solution", "shuffle_seed"}
+
+
 def load_config(path):
     with open(path, "rb") as f:
         cfg = tomllib.load(f)
+    if missing := REQUIRED - cfg.keys():
+        raise ValueError(f"missing config keys: {sorted(missing)}")
+    if extra := cfg.keys() - REQUIRED - OPTIONAL:
+        raise ValueError(f"unknown config keys: {sorted(extra)}")
+    s = cfg.setdefault("setting", {})
+    if extra := s.keys() - SETTING_KEYS:
+        raise ValueError(f"unknown [setting] keys: {sorted(extra)}")
+    if not isinstance(s.get("shuffle_seed"), int):
+        raise ValueError("[setting] shuffle_seed (int) is required")  # noqa: TRY004
+    if s.setdefault("has_backdoor_solution", True) is not True:
+        raise ValueError("has_backdoor_solution must be true (backdoor-verified pool)")
     if cfg["protocol"] not in PROTOCOLS:
         raise ValueError(
             f"unknown protocol {cfg['protocol']!r}; have {list(PROTOCOLS)}"
         )
-    EvalMode(cfg["mode"])
-    if Path(cfg["log_dir"]).is_absolute() or Path(cfg["log_dir"]).parts[0] != "logs":
-        raise ValueError("log_dir must be a relative path under logs/")
+    if cfg["mode"] not in {m.value for m in EvalMode}:
+        raise ValueError(f"unknown mode {cfg['mode']!r}; use 'honest' or 'attack'")
+    parts = Path(cfg["log_dir"]).parts
+    if Path(cfg["log_dir"]).is_absolute() or len(parts) < 2 or parts[0] != "logs":
+        raise ValueError("log_dir must be a relative path under logs/ (e.g. logs/x)")
     if "split" in cfg:
+        if cfg["split"] not in SPLITS:
+            raise ValueError(f"unknown split {cfg['split']!r}; have {list(SPLITS)}")
         lo, hi = SPLITS[cfg["split"]]
         cfg.setdefault("start", lo)
         cfg.setdefault("n", hi - cfg["start"] + 1)
         if not (lo <= cfg["start"] and cfg["start"] + cfg["n"] - 1 <= hi):
             raise ValueError("start/n fall outside the named split")
+    if "n" not in cfg:
+        raise ValueError("config needs n (or a split)")
     return cfg
 
 
