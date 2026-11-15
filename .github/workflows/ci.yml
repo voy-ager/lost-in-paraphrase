@@ -48,6 +48,8 @@ jobs:
       - name: tests
         # exit code 5 = no tests collected yet
         run: pytest -q || [ $? -eq 5 ]
+      - name: results scrub
+        run: python scripts/scrub_check.py
       - name: security scan (our code)
         run: bandit -r . -x ./tests,./.venv -q
       - name: dependency audit

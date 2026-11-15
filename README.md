@@ -35,16 +35,6 @@ flowchart LR
 4. Tests an **adaptive attacker** that knows a paraphraser is present and tries signals that survive rewording.
 5. Reports **safety** (backdoors caught) against **usefulness** (tasks still solved after paraphrasing), with bootstrap confidence intervals, including any negative results.
 
-## Why this is a contribution
-
-ControlArena already includes trusted monitoring, defer-to-trusted, defer-to-resample and **trusted editing**. In trusted editing, a trusted model rewrites suspicious output *after* scoring, to make it safer. Its glossary defines collusion, untrusted monitoring and paraphrasing as concepts. When we checked (November 2026), it did not include:
-
-- an untrusted-monitoring protocol with a **colluding policy and monitor pair**
-- a **paraphrase-before-monitor** defense
-- **upfront validation** of an untrusted monitor with synthetic attacks (honeypots)
-
-We searched its code, issues and pull requests for "paraphrase" and "collusion", and none implement these. Our goal is to build them as clean, tested ControlArena components and offer them upstream, after first opening an issue to confirm the maintainers want them.
-
 ## Background reading
 
 - Greenblatt, Shlegeris, Sachan, Roger. *AI Control: Improving Safety Despite Intentional Subversion* (2023).
