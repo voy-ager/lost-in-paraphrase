@@ -24,6 +24,10 @@ PATTERNS = {
     "generic_secret": re.compile(
         r"(?i)\b(?:api[_-]?key|token|secret)\b[\"']?\s*[=:]\s*[\"']?[A-Za-z0-9+/_.-]{16,}"
     ),
+    "password": re.compile(r"(?i)\b(?:password|passwd)\b[\"']?\s*[=:]\s*[\"']?[^\s\"',;]{4,}"),
+    "hf_token": re.compile(r"\bhf_[A-Za-z0-9]{20,}"),
+    "jwt": re.compile(r"\beyJ[\w-]{5,}\.eyJ[\w-]{5,}\.[\w-]{5,}"),
+    "unc_path": re.compile(r"(?<![\w\\])\\\\[\w.$-]+\\[\w.$-]+"),
     "bearer_token": re.compile(r"\bBearer\s+[A-Za-z0-9._~+/-]{16,}"),
 }
 
@@ -41,9 +45,16 @@ def scan_text(text: str) -> list[tuple[int, str]]:
     return hits
 
 
+def _skipped(f: Path) -> bool:
+    return "__pycache__" in f.parts or f.suffix == ".pyc"
+
+
 def _files(paths: Iterable[Path]) -> Iterable[Path]:
     for p in paths:
-        yield from sorted(f for f in p.rglob("*") if f.is_file()) if p.is_dir() else [p]
+        if p.is_dir():
+            yield from sorted(f for f in p.rglob("*") if f.is_file() and not _skipped(f))
+        else:
+            yield p
 
 
 def scan_paths(paths: Iterable[Path | str]) -> list[tuple[Path, int, str]]:

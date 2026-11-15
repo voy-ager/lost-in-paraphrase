@@ -22,6 +22,10 @@ POSITIVE = {
     "private_key": "-----BEGIN RSA PRIV" + "ATE KEY-----",
     "generic_secret": "api_" + "key = " + A + "K1L2",
     "bearer_token": "Bearer " + A + "K1L2",
+    "password": "pass" + "word = hunter22x",
+    "hf_token": "h" + "f_" + A + "K1L2",
+    "jwt": "ey" + "Jhbgci.ey" + "Jzdwii.abcde-_f",
+    "unc_path": "\\\\" + "srv" + "\\" + "share",
 }
 NEGATIVE = {
     "email": "use name at host",
@@ -35,6 +39,10 @@ NEGATIVE = {
     "private_key": "-----BEGIN CERTIFICATE-----",
     "generic_secret": "token = short",
     "bearer_token": "Bearer short",
+    "password": "pass" + "word = ",
+    "hf_token": "h" + "f_short",
+    "jwt": "ey" + "Jhbgci.notjwt",
+    "unc_path": r"a\b and path\to",
 }
 
 
@@ -69,6 +77,14 @@ def run_cli(cwd, *args):
     cmd = [sys.executable, str(ROOT / "scripts" / "scrub_check.py"), *args]
     env = {"PYTHONPATH": str(ROOT / "src")}
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, env=env, check=False)
+
+
+def test_pycache_skipped(tmp_path):
+    d = tmp_path / "__pycache__"
+    d.mkdir()
+    (d / "x.pyc").write_bytes(b"\0")
+    (tmp_path / "y.pyc").write_bytes(b"\0")
+    assert scan_paths([tmp_path]) == []
 
 
 def test_cli_exit_codes(tmp_path):
