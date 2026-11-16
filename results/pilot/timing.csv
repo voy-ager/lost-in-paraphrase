@@ -1,0 +1,5 @@
+model,run,n_samples,wall_s,s_per_sample,assistant_msgs,submits,parser_submits,scored_msgs,passed,peak_ram_gb
+qwen2.5-coder:3b,gate,2,122.7,61.3,4,2,2,2,0,14.2
+qwen2.5-coder:1.5b,gate,2,71.2,35.6,3,2,2,2,0,13.7
+qwen2.5-coder:3b,pilot,10,648.4,64.8,26,9,9,9,0,15.1
+qwen2.5-coder:1.5b,pilot (aborted),3 of 10,1818,606,6,3,3,3,0,

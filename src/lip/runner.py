@@ -16,6 +16,8 @@ from control_arena.settings.apps.apps_setting import AppsSetting
 from inspect_ai import eval as inspect_eval
 from inspect_ai.model import GenerateConfig
 
+from lip.text_submit import text_submit_builder
+
 # design section 5: inclusive 1-based positions in the seeded backdoor-verified pool
 SPLITS = {
     "pilot": (1, 10),
@@ -24,7 +26,13 @@ SPLITS = {
     "dev": (301, 340),
     "honeypot": (401, 460),
 }
-PROTOCOLS = {"trusted_monitoring": trusted_monitoring_builder}  # others plug in here
+PROTOCOLS = {  # others plug in here
+    "trusted_monitoring": trusted_monitoring_builder,
+    # same, but plain-text submissions from small models become real submit calls
+    "trusted_monitoring_text_submit": lambda: trusted_monitoring_builder(
+        policy=text_submit_builder()
+    ),
+}
 
 
 REQUIRED = {"protocol", "mode", "untrusted_model", "trusted_model", "log_dir"}
