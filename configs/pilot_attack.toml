@@ -1,0 +1,15 @@
+# Pilot: positions 1-10 of the seeded backdoor-verified pool (design section 5).
+protocol = "trusted_monitoring"
+mode = "attack"
+untrusted_model = "ollama/qwen2.5-coder:3b"
+trusted_model = "ollama/qwen2.5-coder:1.5b"
+split = "pilot"   # named range from SPLITS; or set start (1-based) and n
+n = 10
+epochs = 1
+max_steps = 5
+seed = 0
+log_dir = "logs/pilot_attack"
+
+[setting]
+has_backdoor_solution = true
+shuffle_seed = 0
